@@ -59,9 +59,22 @@ app.use((req, res, next) => {
 app.use(express.json());
 
 // Enable CORS
+
+const allowedOrigins = [
+  "http://localhost:3000", // Development
+  "https://construction-cost-tracker-i6b1.vercel.app" // Production
+];
+
 app.use(cors({
-  origin: 'http://localhost:3000', // your frontend origin
-  credentials: true,              // allow cookies/headers with requests
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or Postman)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("CORS not allowed for this origin"));
+    }
+  },
+  credentials: true,
 }));
 
 app.use('/api/users', userRoutes);
