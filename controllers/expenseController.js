@@ -257,21 +257,21 @@ export const getContractExpenses = asyncHandler(async (req, res) => {
     const e = String(req.query.endDate);
     date.$lte = isYMD.test(e) ? endOfUtcDay(e) : new Date(e);
   }
-  // If both exist and are inverted, swap for safety
   if (date.$gte && date.$lte && date.$gte > date.$lte) {
     const tmp = date.$gte; date.$gte = date.$lte; date.$lte = tmp;
   }
   const dateFilter = hasStart || hasEnd ? { date } : {};
 
-  // Adding filter for `isContract: true`
+  // ✅ Ensure we only fetch expenses where isContract = true
   const contractFilter = { isContract: true };
 
   // Sort
   const allowedSort = new Set(['createdAt', 'amount', 'date']);
   const sortBy = allowedSort.has(req.query.sortBy) ? req.query.sortBy : 'createdAt';
   const sortOrder = req.query.sortOrder === 'asc' ? 1 : -1;
-  const sort = { [sortBy]: sortOrder, createdAt: -1 }; // tie-breaker
+  const sort = { [sortBy]: sortOrder, createdAt: -1 };
 
+  // Final query
   const baseQuery = { user: req.user._id, ...keyword, ...categoryFilter, ...dateFilter, ...contractFilter };
 
   const count = await Expense.countDocuments(baseQuery);
