@@ -24,12 +24,16 @@ const expenseSchema = new mongoose.Schema(
       required: true,
       ref: 'Category',
     },
-    // NEW: explicit transaction date
-    // Store in UTC; default to "now" if client doesn't provide one
-    date: {
+     // NEW: explicit transaction date
+     date: {
       type: Date,
       required: true,
       default: () => new Date(),
+    },
+    // NEW: isContract field (defaults to false)
+    isContract: {
+      type: Boolean,
+      default: false,
     },
   },
   {

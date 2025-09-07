@@ -61,21 +61,21 @@ app.use(express.json());
 // Enable CORS
 
 const allowedOrigins = [
-  "http://localhost:3000", // Development
-  "https://construction-cost-tracker-i6b1.vercel.app" // Production
-];
-
-app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or Postman)
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("CORS not allowed for this origin"));
-    }
-  },
-  credentials: true,
-}));
+    "http://localhost:3000", // Development
+    "https://construction-cost-tracker-i6b1.vercel.app" // Production
+  ];
+  
+  app.use(cors({
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or Postman)
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("CORS not allowed for this origin"));
+      }
+    },
+    credentials: true,
+  }));
 
 app.use('/api/users', userRoutes);
 app.use('/api/categories', categoryRoutes);

@@ -68,6 +68,7 @@ export const createExpenseSchema = Joi.object({
   amount: Joi.number().positive().required(),
   category: objectId().required(),
   date: Joi.date().iso().optional(), // NEW: allow client-provided date
+  isContract: Joi.boolean().optional(), // NEW: Optional field for contract status
 });
 
 export const updateExpenseSchema = Joi.object({
@@ -75,7 +76,9 @@ export const updateExpenseSchema = Joi.object({
   amount: Joi.number().positive().optional(),
   category: objectId().optional(),
   date: Joi.date().iso().optional(), // NEW: allow updating date
+  isContract: Joi.boolean().optional(), // NEW: Optional field for contract status
 }).min(1); // require at least one field to update
+
 
 export default {
   validate,

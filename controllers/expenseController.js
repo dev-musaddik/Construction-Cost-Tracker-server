@@ -94,7 +94,7 @@ export const getExpenseById = asyncHandler(async (req, res) => {
 // @route   POST /api/expenses
 // @access  Private
 export const createExpense = asyncHandler(async (req, res) => {
-  const { description, amount, category, date } = req.body;
+  const { description, amount, category, date ,isContract} = req.body;
 
   const expense = new Expense({
     user: req.user._id,
@@ -102,6 +102,7 @@ export const createExpense = asyncHandler(async (req, res) => {
     amount,
     category,
     ...(date ? { date } : {}),
+    isContract
   });
 
   const createdExpense = await expense.save();
@@ -112,7 +113,8 @@ export const createExpense = asyncHandler(async (req, res) => {
 // @route   PUT /api/expenses/:id
 // @access  Private
 export const updateExpense = asyncHandler(async (req, res) => {
-  const { description, amount, category, date } = req.body;
+  const { description, amount, category, date,isContract } = req.body;
+  console.log(description, amount, category, date,isContract )
   const expense = await Expense.findById(req.params.id);
 
   if (!expense || expense.user.toString() !== req.user._id.toString()) {
@@ -124,6 +126,9 @@ export const updateExpense = asyncHandler(async (req, res) => {
   if (amount !== undefined) expense.amount = amount;
   if (category !== undefined) expense.category = category;
   if (date !== undefined) expense.date = date;
+  if (isContract !== undefined) {
+    expense.isContract = isContract;
+  }
 
   const updatedExpense = await expense.save();
   res.json(updatedExpense);
@@ -206,5 +211,81 @@ export const getExpensesByDate = asyncHandler(async (req, res) => {
   return res.json({
     expenses,
     range: { from: startDate.toISOString(), to: endDate.toISOString() },
+  });
+});
+
+
+// @desc    Get contract expenses grouped by category with total
+// @route   GET /api/expenses/contract
+// @access  Private
+// controllers/expenseController.js
+// controllers/expenseController.js
+
+export const getContractExpenses = asyncHandler(async (req, res) => {
+  const pageSize = Math.min(Math.max(Number(req.query.pageSize) || 10, 1), 200);
+  const page = Math.max(Number(req.query.pageNumber) || 1, 1);
+
+  // Keyword on description (case-insensitive)
+  const keyword = req.query.keyword
+    ? { description: { $regex: req.query.keyword, $options: 'i' } }
+    : {};
+
+  // Category: accept ObjectId or 5-char code (case-sensitive by default)
+  let categoryFilter = {};
+  if (req.query.category) {
+    const cat = String(req.query.category);
+    if (isObjectId.test(cat)) {
+      categoryFilter = { category: cat };
+    } else {
+      const catDoc = await Category.findOne({ code: cat }).select('_id');
+      if (!catDoc) {
+        return res.status(400).json({ message: 'Unknown category' });
+      }
+      categoryFilter = { category: catDoc._id };
+    }
+  }
+
+  // Date range on the transaction `date` field (if provided on docs)
+  const hasStart = !!req.query.startDate;
+  const hasEnd = !!req.query.endDate;
+  const date = {};
+  if (hasStart) {
+    const s = String(req.query.startDate);
+    date.$gte = isYMD.test(s) ? startOfUtcDay(s) : new Date(s);
+  }
+  if (hasEnd) {
+    const e = String(req.query.endDate);
+    date.$lte = isYMD.test(e) ? endOfUtcDay(e) : new Date(e);
+  }
+  // If both exist and are inverted, swap for safety
+  if (date.$gte && date.$lte && date.$gte > date.$lte) {
+    const tmp = date.$gte; date.$gte = date.$lte; date.$lte = tmp;
+  }
+  const dateFilter = hasStart || hasEnd ? { date } : {};
+
+  // Adding filter for `isContract: true`
+  const contractFilter = { isContract: true };
+
+  // Sort
+  const allowedSort = new Set(['createdAt', 'amount', 'date']);
+  const sortBy = allowedSort.has(req.query.sortBy) ? req.query.sortBy : 'createdAt';
+  const sortOrder = req.query.sortOrder === 'asc' ? 1 : -1;
+  const sort = { [sortBy]: sortOrder, createdAt: -1 }; // tie-breaker
+
+  const baseQuery = { user: req.user._id, ...keyword, ...categoryFilter, ...dateFilter, ...contractFilter };
+
+  const count = await Expense.countDocuments(baseQuery);
+  const expenses = await Expense.find(baseQuery)
+    .populate('category', 'name code')
+    .sort(sort)
+    .limit(pageSize)
+    .skip(pageSize * (page - 1));
+
+  res.json({
+    expenses,
+    page,
+    pages: Math.ceil(count / pageSize),
+    total: count,
+    pageSize,
   });
 });
