@@ -64,7 +64,8 @@ app.use(express.json());
 
 const allowedOrigins = [
     "http://localhost:3000", // Development
-    "https://construction-cost-tracker-i6b1.vercel.app" // Production
+    "https://construction-cost-tracker-i6b1.vercel.app",
+    "https://construction-cost-tracker.vercel.app" // Production
   ];
   
   app.use(cors({

@@ -31218,3 +31218,17 @@
 {"level":"info","message":"OPTIONS /api/categories/","timestamp":"2025-09-19 11:18:22"}
 {"level":"info","message":"GET /api/categories/","timestamp":"2025-09-19 11:18:22"}
 {"level":"info","message":"GET /api/categories/","timestamp":"2025-09-19 11:18:22"}
+{"level":"info","message":"OPTIONS /api/dashboard","timestamp":"2025-09-19 11:32:37"}
+{"level":"info","message":"OPTIONS /api/dashboard","timestamp":"2025-09-19 11:32:37"}
+{"level":"info","message":"GET /api/dashboard","timestamp":"2025-09-19 11:32:37"}
+{"level":"info","message":"GET /api/dashboard","timestamp":"2025-09-19 11:32:38"}
+{"level":"info","message":"OPTIONS /api/dashboard","timestamp":"2025-09-19 11:32:44"}
+{"level":"info","message":"OPTIONS /api/dashboard","timestamp":"2025-09-19 11:32:44"}
+{"level":"info","message":"GET /api/dashboard","timestamp":"2025-09-19 11:32:44"}
+{"level":"info","message":"GET /api/dashboard","timestamp":"2025-09-19 11:32:44"}
+{"level":"info","message":"GET /api/dashboard","timestamp":"2025-09-19 11:32:46"}
+{"level":"info","message":"GET /api/dashboard","timestamp":"2025-09-19 11:32:47"}
+{"level":"info","message":"OPTIONS /api/dashboard","timestamp":"2025-09-19 11:32:50"}
+{"level":"info","message":"OPTIONS /api/dashboard","timestamp":"2025-09-19 11:32:50"}
+{"level":"info","message":"GET /api/dashboard","timestamp":"2025-09-19 11:32:50"}
+{"level":"info","message":"GET /api/dashboard","timestamp":"2025-09-19 11:32:51"}
