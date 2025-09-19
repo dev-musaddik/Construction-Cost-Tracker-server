@@ -4,12 +4,14 @@ import dotenv from 'dotenv';
 import connectDB from './config/db.js';
 import { connectRedis } from './config/redis.js';
 import { emailWorker } from './jobs/worker.js';
+import './jobs/dailyPdfReport.js';
 import userRoutes from './routes/userRoutes.js';
 import categoryRoutes from './routes/categoryRoutes.js';
 import expenseRoutes from './routes/expenseRoutes.js';
 import depositRoutes from './routes/depositRoutes.js';
 import dashboardRoutes from './routes/dashboardRoutes.js';
 import reportRoutes from './routes/reportRoutes.js';
+import todoRoutes from './routes/todoRoutes.js';
 import logger from './config/logger.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 
@@ -83,6 +85,7 @@ app.use('/api/expenses', expenseRoutes);
 app.use('/api/deposits', depositRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/reports', reportRoutes);
+app.use('/api/todos', todoRoutes);
 
 app.get('/', (req, res) => {
   res.send('API is running...');

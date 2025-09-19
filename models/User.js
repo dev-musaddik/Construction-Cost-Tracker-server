@@ -21,6 +21,10 @@ const userSchema = new mongoose.Schema({
     enum: ['user', 'admin'],
     default: 'user',
   },
+  dailyReports: {
+    type: Boolean,
+    default: false,
+  },
 }, {
   timestamps: true,
 });

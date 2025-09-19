@@ -79,6 +79,21 @@ export const updateExpenseSchema = Joi.object({
   isContract: Joi.boolean().optional(), // NEW: Optional field for contract status
 }).min(1); // require at least one field to update
 
+// --- Todo --- 
+export const createTodoSchema = Joi.object({
+  description: Joi.string().min(3).max(100).required(),  // Description is required and has length constraints
+  category: objectId('Category').optional(),  // Optional category, but must be a valid ObjectId if provided
+  dueDate: Joi.date().iso().optional(),  // Optional ISO date format for due date
+  completed: Joi.boolean().optional(),  // Optional completed status, defaults to false
+});
+
+export const updateTodoSchema = Joi.object({
+  description: Joi.string().min(3).max(100).optional(),  // Optional description
+  category: objectId('Category').optional(),  // Optional category, must be valid ObjectId
+  dueDate: Joi.date().iso().optional(),  // Optional due date in ISO format
+  completed: Joi.boolean().optional(),  // Optional completion status
+}).min(1);  // At least one field should be updated
+
 
 export default {
   validate,
@@ -90,4 +105,7 @@ export default {
   updateCategorySchema,
   createExpenseSchema,
   updateExpenseSchema,
+  createTodoSchema,
+  updateTodoSchema
+
 };

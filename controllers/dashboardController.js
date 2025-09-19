@@ -2,21 +2,9 @@ import asyncHandler from "express-async-handler";
 import Expense from "../models/Expense.js";
 import Deposit from "../models/Deposit.js";
 import Category from "../models/Category.js"; // Import Category model
-/**
- * GET /api/dashboard
- * Private
- *
- * Query params supported:
- *  - filter=today|weekly|monthly  (server-computed windows)
- *  - date=YYYY-MM-DD               (single day)
- *  - from=YYYY-MM-DD&to=YYYY-MM-DD (inclusive range)
- *  - weekStart=sun|mon             (default mon, used when filter=weekly)
- *
- * Notes:
- *  - If `date` is provided, `from/to` are ignored.
- *  - If none are provided, returns all-time stats for the user.
- */
-export const getDashboardData = asyncHandler(async (req, res) => {
+import { generateDashboardPdf } from '../utils/pdfGenerator.js';
+
+export const getDashboardData = async (req) => {
   const { filter, date, from, to, weekStart = "mon" } = req.query;
 
   // --- helpers -------------------------------------------------------------
@@ -133,7 +121,7 @@ export const getDashboardData = asyncHandler(async (req, res) => {
   const totalDeposits = deposits.reduce((acc, d) => acc + (d.amount || 0), 0);
   const balance = totalDeposits - totalExpenses;
 
-  res.json({
+  return {
     totalExpenses,
     totalDeposits,
     balance,
@@ -153,7 +141,19 @@ export const getDashboardData = asyncHandler(async (req, res) => {
         weekStart,
       },
     },
-  });
+  };
+};
+
+export const getDashboardDataAsJson = asyncHandler(async (req, res) => {
+  const data = await getDashboardData(req);
+  res.json(data);
 });
 
-export default getDashboardData;
+export const downloadDashboardPdf = asyncHandler(async (req, res) => {
+  const data = await getDashboardData(req);
+  const pdf = generateDashboardPdf(data);
+
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader('Content-Disposition', 'attachment; filename=dashboard.pdf');
+  res.send(Buffer.from(pdf));
+});
